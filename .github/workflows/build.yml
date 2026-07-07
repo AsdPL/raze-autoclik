@@ -1,0 +1,35 @@
+name: Build Raze AutoClick .exe
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v4
+
+      - name: Instalar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: pip install customtkinter pynput Pillow pyinstaller
+
+      - name: Generar ícono
+        run: python generate_icon.py
+
+      - name: Compilar .exe
+        run: pyinstaller --onefile --windowed --noupx --icon=icon.ico --name="Raze AutoClick" --add-data "icon.ico;." main.py
+
+      - name: Subir .exe como descargable
+        uses: actions/upload-artifact@v4
+        with:
+          name: Raze-AutoClick
+          path: dist/Raze AutoClick.exe
+          retention-days: 30
